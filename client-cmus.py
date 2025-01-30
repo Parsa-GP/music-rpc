@@ -4,7 +4,7 @@ import json
 import traceback
 import socket_handling as sh
 
-def get_cmus_status() -> dict:
+def get_status() -> dict:
 	"""Get current CMUS status."""
 	try:
 		args = json.loads(sys.argv[1])
@@ -19,7 +19,7 @@ def get_cmus_status() -> dict:
 def main():
 	client = sh.Client(port=6473)
 	client.connect()
-	client.send(json.dumps(get_cmus_status()))
+	client.send(json.dumps(get_status()))
 	client.close()
 
 if __name__ == "__main__":

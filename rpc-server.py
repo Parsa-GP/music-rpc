@@ -40,7 +40,7 @@ def update_presence(status):
 		large_image="listen-moe",
 		large_text="https://listen.moe/",
 		small_image="github",
-		small_text="github.com/Parsa-GP/cmus-rpc",
+		small_text="Parsa-GP/cmus-rpc",
 		start=int(start_time.timestamp()),
 	)
 

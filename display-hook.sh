@@ -12,5 +12,5 @@ else
     tmux new-session -d -s cmus-rpc
     tmux send-keys -t cmus-rpc "cd /home/parsa/projects/python/cmus-discord/" C-m
 fi
-tmux send-keys -t cmus-rpc "python3 cmus-rpc.py '$args'" C-m
+tmux send-keys -t cmus-rpc "python3 client-cmus.py '$args'" C-m
 
