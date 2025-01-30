@@ -25,8 +25,7 @@ class Server:
 
             message = self.receive(client_socket)
             func(message)
-
-        client_socket.close()
+        #client_socket.close()
 
 
 class Client:

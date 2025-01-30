@@ -35,8 +35,8 @@ def update_presence(status):
 	start_time = now - timedelta(seconds=position)
 
 	RPC.update(
-		details=title,
-		state=artist,
+		details=f"{title:2}",
+		state=f"{artist:2}",
 		large_image="listen-moe",
 		large_text="https://listen.moe/",
 		small_image="github",
