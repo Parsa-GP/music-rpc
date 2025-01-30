@@ -1,11 +1,14 @@
 #!/bin/bash
-echo -n "[" > /tmp/cmus_status.json
+
+args="["
 
 for arg in "$@"; do
-    echo -n "\"$arg\", " >> /tmp/cmus_status.json
+    args+="\"$arg\", "
 done
-sed -i 's/, *$//g' /tmp/cmus_status.json
+args="${args%, }"
+args+="]"
+tmux new-session -d -s cmus-rpc
+tmux send-keys -t cmus-rpc C-c
+tmux send-keys -t cmus-rpc "cd /home/parsa/projects/python/cmus-discord/" C-m
+tmux send-keys -t cmus-rpc "python3 cmus-rpc.py '$args'" C-m
 
-echo "]" >> /tmp/cmus_status.json
-
-python3 /home/parsa/projects/python/cmus-discord/cmus-rpc.py 
