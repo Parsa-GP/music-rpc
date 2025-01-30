@@ -18,15 +18,8 @@ server. you can change this code to for example get from
 mpv and sends it to the server.
 
 ## Run
-> [!IMPORTANT]
-> 1. You have to install tmux for it to work
-> 2. it _might not_ work in windows/wsl
+Go to [wiki/#Supported-Clients](https://github.com/Parsa-GP/music-rpc/wiki/Supported-Clients/) for the Instructions
 
-Execute this command in your cmus:
-```
-set status_display_program=/PATH/TO/display-hook.sh
-
-```
 ## Specia Thanks
 to TOBEFILLED for the miku art [pixiv](https://www.pixiv.net/en/artworks/126438958) | [gelbooru](https://gelbooru.com/index.php?page=post&s=view&id=11349050) \
 to еще рекомендую for the pixelart of the music notes [apppng](https://apppng.vercel.app/posts/music-note-pixel-art/)
