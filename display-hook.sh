@@ -1,5 +1,4 @@
 #!/bin/bash
-
 args="["
 
 for arg in "$@"; do
@@ -7,8 +6,11 @@ for arg in "$@"; do
 done
 args="${args%, }"
 args+="]"
-tmux new-session -d -s cmus-rpc
-tmux send-keys -t cmus-rpc C-c
-tmux send-keys -t cmus-rpc "cd /home/parsa/projects/python/cmus-discord/" C-m
+if tmux has-session -t cmus-rpc 2>/dev/null; then
+    tmux send-keys -t cmus-rpc C-c
+else
+    tmux new-session -d -s cmus-rpc
+    tmux send-keys -t cmus-rpc "cd /home/parsa/projects/python/cmus-discord/" C-m
+fi
 tmux send-keys -t cmus-rpc "python3 cmus-rpc.py '$args'" C-m
 
