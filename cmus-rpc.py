@@ -9,7 +9,7 @@ def get_cmus_status() -> dict:
 	try:
 		args = json.loads(sys.argv[1])
 		args = dict(zip(args[0::2], args[1::2]))
-		print(f"{args=}")
+		#print(f"{args=}")
 		args["position"] = int(subprocess.run("cmus-remote -Q | grep position | awk '{print $2}'", shell=True, capture_output=True, text=True).stdout.strip())
 		return args
 	except Exception:

@@ -15,7 +15,7 @@ class Server:
 
     def receive(self, client_socket):
         data = client_socket.recv(655350).decode()
-        print(f"Received: {data}")
+        #print(f"Received: {data}")
         return data
 
     def start(self, func):

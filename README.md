@@ -28,5 +28,5 @@ set status_display_program=/PATH/TO/display-hook.sh
 
 ```
 ## Specia Thanks
-to TOBEFILLED for the miku art [pixiv](https://www.pixiv.net/en/artworks/126438958) | [gelbooru](https://gelbooru.com/index.php?page=post&s=view&id=11349050)
+to TOBEFILLED for the miku art [pixiv](https://www.pixiv.net/en/artworks/126438958) | [gelbooru](https://gelbooru.com/index.php?page=post&s=view&id=11349050) \
 to еще рекомендую for the pixelart of the music notes [apppng](https://apppng.vercel.app/posts/music-note-pixel-art/)
