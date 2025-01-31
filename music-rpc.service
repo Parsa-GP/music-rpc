@@ -1,0 +1,14 @@
+[Unit]
+Description=RPC Server & Client for music players!
+After=network.target
+
+[Service]
+ExecStart=source venv/bin/activate && /usr/bin/python3 rpc-server.py
+WorkingDirectory=/opt/music-rpc-service
+Restart=always
+User=nobody
+Group=nobody
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
