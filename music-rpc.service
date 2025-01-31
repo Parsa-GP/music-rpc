@@ -3,7 +3,7 @@ Description=RPC Server & Client for music players!
 After=network.target
 
 [Service]
-ExecStart=venv/bin/python3 rpc-server.py
+ExecStart=/opt/music-rpc-service/venv/bin/python3 rpc-server.py
 WorkingDirectory=/opt/music-rpc-service
 Restart=always
 User=nobody
