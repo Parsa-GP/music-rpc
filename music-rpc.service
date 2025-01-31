@@ -6,8 +6,8 @@ After=network.target
 ExecStart=/opt/music-rpc-service/venv/bin/python3 rpc-server.py
 WorkingDirectory=/opt/music-rpc-service
 Restart=always
-User=nobody
-Group=nobody
+User=$USER
+Group=$GROUP
 Environment=PYTHONUNBUFFERED=1
 
 [Install]
