@@ -8,7 +8,7 @@ from time import sleep
 
 # Get CLIENT_ID from client-id.txt
 if not os.path.exists("client-id.txt"):
-	exit("Please make a client-id.txt file and put your discord client id in it.\nInstructions on how to do it: https://support-dev.discord.com/hc/en-us/articles/21204493235991-How-Can-Users-Discover-and-Play-My-Activity#h_01J8JK19X28EMARCNKRGW7J579")
+	exit(f"Please make a client-id.txt file and put your discord client id in it.\nWe are in: {os.getcwd()}\nInstructions on how to do it: https://support-dev.discord.com/hc/en-us/articles/21204493235991-How-Can-Users-Discover-and-Play-My-Activity#h_01J8JK19X28EMARCNKRGW7J579")
 with open("client-id.txt", "r") as f:
 	CLIENT_ID = f.read().strip()
 
