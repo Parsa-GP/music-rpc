@@ -20,29 +20,60 @@ def update_presence(status):
 
 	status = json.loads(status)
 
-	if not status or status.get("status") == "stopped":
-		RPC.clear()
-		print("No music playing or stopped.")
+	if not status:
+		print("No music playing")
 		return
 
-	title = f"{status.get('title', 'Unknown Title')}"
-	artist = f"{status.get('artist', 'Unknown Artist')}"
+	#print(status)
+	match status["type"]:
+		case "cmus":
 
-	print("{} - {}".format(artist, title))
-	position = status["position"]
+			title = f"{status.get('title', 'Unknown Title')}"
+			artist = f"{status.get('artist', 'Unknown Artist')}"
 
-	now = datetime.now()
-	start_time = now - timedelta(seconds=position)
+			now = datetime.now()
+			start_time = now - timedelta(seconds=status["position"])
 
-	RPC.update(
-		details=f"{title:2}",
-		state=f"{artist:2}",
-		large_image="listen-moe",
-		large_text="https://listen.moe/",
-		small_image="github",
-		small_text="Parsa-GP/cmus-rpc",
-		start=int(start_time.timestamp()),
-	)
+			print("{} - {}".format(artist, title))
+			if status.get("status") == "paused":
+				#RPC.clear()
+				RPC.update(
+					details=f"{title:2}",
+					state=f"{artist:2}",
+					large_image="music-miku-heart-pause",
+					large_text="MIKU NOOOO",
+					small_image="github",
+					small_text="Parsa-GP/music-rpc",
+				)
+				print("Music stopped.")
+			else: 
+				RPC.update(
+					details=f"{title:2}",
+					state=f"{artist:2}",
+					large_image="music-miku-heart",
+					large_text="MIKU",
+					small_image="github",
+					small_text="Parsa-GP/music-rpc",
+					start=int(start_time.timestamp()),
+				)
+		case "listen-moe":
+			title = f"{status.get('title', 'Unknown Title')}"
+			artists = f"{status.get('artists', 'Unknown Artist')}"
+			start = status["start"]
+
+			print("{} - {}".format(artists, title) if artists else title)
+
+			RPC.update(
+				details=f"{title:2}",
+				state=f"{artists:2}",
+				large_image="listen-moe",
+				large_text="https://listen.moe/",
+				small_image="github",
+				small_text="Parsa-GP/music-rpc",
+				start=start,
+			)
+		case _:
+			print("tf is this shi")
 
 try:
 	print("Initializing Discord RPC... ", end="")
@@ -62,8 +93,6 @@ try:
 
 except KeyboardInterrupt:
 	print("Exiting.")
-except Exception as e:
-	print(f"Error: {e} ({type(e)})")
 finally:
 	if RPC:
 		try:

@@ -11,7 +11,7 @@ class Server:
 
     def send(self, client_socket, message):
         client_socket.send(message.encode())
-        print(f"Sent: {message}")
+        #print(f"Sent: {message}")
 
     def receive(self, client_socket):
         data = client_socket.recv(655350).decode()
@@ -36,7 +36,7 @@ class Client:
 
     def send(self, message):
         self.client_socket.send(message.encode())
-        print(f"Sent: {message}")
+        #print(f"Sent: {message}")
 
     def receive(self):
         data = self.client_socket.recv(655350).decode()

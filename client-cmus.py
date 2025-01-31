@@ -9,7 +9,7 @@ def get_status() -> dict:
 	try:
 		args = json.loads(sys.argv[1])
 		args = dict(zip(args[0::2], args[1::2]))
-		#print(f"{args=}")
+		args["type"] = "cmus"
 		args["position"] = int(subprocess.run("cmus-remote -Q | grep position | awk '{print $2}'", shell=True, capture_output=True, text=True).stdout.strip())
 		return args
 	except Exception:
@@ -19,7 +19,9 @@ def get_status() -> dict:
 def main():
 	client = sh.Client(port=6473)
 	client.connect()
-	client.send(json.dumps(get_status()))
+	status = json.dumps(get_status())
+	print(f"Sent: {status}")
+	client.send(status)
 	client.close()
 
 if __name__ == "__main__":
