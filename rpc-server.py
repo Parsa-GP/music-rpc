@@ -1,13 +1,14 @@
-import os
+from os import path
 from pypresence import Presence
 from pypresence import exceptions as pyp_exceptions
 from datetime import datetime, timedelta
-import socket_handling as sh
-import json
+from socket_handling import Server
+from json import loads
 from time import sleep
+from traceback import format_exc
 
 # Get CLIENT_ID from client-id.txt
-if not os.path.exists("client-id.txt"):
+if not path.exists("client-id.txt"):
 	exit(f"Please make a client-id.txt file and put your discord client id in it.\nWe are in: {os.getcwd()}\nInstructions on how to do it: https://support-dev.discord.com/hc/en-us/articles/21204493235991-How-Can-Users-Discover-and-Play-My-Activity#h_01J8JK19X28EMARCNKRGW7J579")
 with open("client-id.txt", "r") as f:
 	CLIENT_ID = f.read().strip()
@@ -18,28 +19,35 @@ def update_presence(status):
 	"""Update Discord presence."""
 	global RPC
 
-	status = json.loads(status)
+	status = loads(status)
 
 	if not status:
 		print("No music playing")
 		return
 
-	#print(status)
+	print(status)
 	match status["type"]:
 		case "cmus":
+			details = f"{status.get('title')}"
+			state = f"{status.get('artist')}"
+			if details.strip() and state.strip():
+				
+				details_fmt = path.split(status["file"])[1]
+				state_fmt = "  "
+			else:
+				details_fmt = 'Unknown Title' if details=="" else details
+				state_fmt = 'Unknown Artist' if state=="" else state
 
-			title = f"{status.get('title', 'Unknown Title')}"
-			artist = f"{status.get('artist', 'Unknown Artist')}"
 
 			now = datetime.now()
 			start_time = now - timedelta(seconds=status["position"])
-
-			print("{} - {}".format(artist, title))
+			
+			print("{} - {}".format(state_fmt, details_fmt))
 			if status.get("status") == "paused":
 				#RPC.clear()
 				RPC.update(
-					details=f"{title:2}",
-					state=f"{artist:2}",
+					details=f"{details_fmt:2}",
+					state=f"{state_fmt:2}",
 					large_image="music-miku-heart-pause",
 					large_text="MIKU NOOOO",
 					small_image="github",
@@ -48,8 +56,8 @@ def update_presence(status):
 				print("Music stopped.")
 			else: 
 				RPC.update(
-					details=f"{title:2}",
-					state=f"{artist:2}",
+					details=f"{details_fmt:2}",
+					state=f"{state_fmt:2}",
 					large_image="music-miku-heart",
 					large_text="MIKU",
 					small_image="github",
@@ -85,11 +93,14 @@ try:
 		exit()
 	print("OK")
 
-	server = sh.Server(port=6473)
+	server = Server(port=6473)
 	while True:
-		server.start(update_presence)
-		print("Waiting 10s to reconnect")
-		sleep(10)
+		try:
+			server.start(update_presence)
+		except pyp_exceptions.PipeClosed as e:
+			print(format_exc())
+			print("Waiting 10s to reconnect")
+			sleep(10)
 
 except KeyboardInterrupt:
 	print("Exiting.")
