@@ -1,36 +1,18 @@
 import json
+from os import path
 
 config = {}
 
 class Config:
-	def __init__(self, filepath:str="config.jsonc"):
+	def __init__(self, filepath:str="~/.config/music-rpc/config.jsonc"):
+		if not path.exists(filepath):
+			raise FileNotFoundError("The config file is nowhere to be found.\npath: "+filepath)
 		with open(filepath) as f:
 			self.data = json.load(f)
 
-# i should make template or some sort
-# the code repeating isn't efficient
+	def get(self, key, player:str):
+		return self.data["server"][player].get(key)
 
-class Server:
-	def __init__(self, conf:Config, player:str):
-		self.config = conf
-		self.data = conf.data["server"]
-		self.player = player
+	def getglobal(self, key, ):
+		return self.data["server"].get(key)
 
-	def get(self, key):
-		return self.data[self.player].get(key)
-
-	def getglobal(self, key):
-		return self.data.get(key)
-
-
-class Client:
-	def __init__(self, conf:Config, player:str):
-		self.config = conf
-		self.data = conf.data["client"]
-		self.player = player
-
-	def get(self, key):
-		return self.data[self.player].get(key)
-
-	def getglobal(self, key):
-		return self.data.get(key)
