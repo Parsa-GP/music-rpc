@@ -1,10 +1,10 @@
-import socket
+from socket import socket, AF_INET, SOCK_STREAM
 
 class Server:
     def __init__(self, host='localhost', port=12345):
         self.host = host
         self.port = port
-        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket = socket(AF_INET, SOCK_STREAM)
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(1)
         print(f"Server is listening on {self.host}:{self.port}")
@@ -32,7 +32,7 @@ class Client:
     def __init__(self, host='localhost', port=12345):
         self.host = host
         self.port = port
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client_socket = socket(AF_INET, SOCK_STREAM)
 
     def send(self, message):
         self.client_socket.send(message.encode())

@@ -1,4 +1,4 @@
-from os import path
+from os import path, getcwd
 from pypresence import Presence
 from pypresence import exceptions as pyp_exceptions
 from datetime import datetime, timedelta
@@ -9,14 +9,14 @@ from traceback import format_exc
 
 # Get CLIENT_ID from client-id.txt
 if not path.exists("client-id.txt"):
-	exit(f"Please make a client-id.txt file and put your discord client id in it.\nWe are in: {os.getcwd()}\nInstructions on how to do it: https://support-dev.discord.com/hc/en-us/articles/21204493235991-How-Can-Users-Discover-and-Play-My-Activity#h_01J8JK19X28EMARCNKRGW7J579")
+	exit(f"Please make a client-id.txt file and put your discord client id in it.\nWe are in: {getcwd()}\nInstructions on how to do it: https://support-dev.discord.com/hc/en-us/articles/21204493235991-How-Can-Users-Discover-and-Play-My-Activity#h_01J8JK19X28EMARCNKRGW7J579")
 with open("client-id.txt", "r") as f:
 	CLIENT_ID = f.read().strip()
 
 RPC = None
 
-def update_presence(status):
-	"""Update Discord presence."""
+def update_presence(status: str):
+	"""Updates Discord presence."""
 	global RPC
 
 	status = loads(status)
