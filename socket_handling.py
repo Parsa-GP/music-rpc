@@ -18,13 +18,13 @@ class Server:
         #print(f"Received: {data}")
         return data
 
-    def start(self, func):
+    def start(self, func, *arg):
         while True:
             client_socket, client_address = self.server_socket.accept()
             print(f"Connection from {client_address}")
 
             message = self.receive(client_socket)
-            func(message)
+            func(message, *arg)
         #client_socket.close()
 
 
@@ -44,9 +44,12 @@ class Client:
         return data.decode('utf-8')
 
     def connect(self):
-        self.client_socket.connect((self.host, self.port))
-        print(f"Connected to {self.host}:{self.port}")
-
+        try:
+            self.client_socket.connect((self.host, self.port))
+            print(f"Connected to {self.host}:{self.port}")
+        except ConnectionRefusedError:
+            print("The server is not up or not responding (Connection refused).")
+            exit()
     def close(self):
         self.client_socket.close()
         print("Connection closed")

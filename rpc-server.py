@@ -8,33 +8,35 @@ from time import sleep
 from traceback import format_exc
 import configparser
 import shutil
+import log
+
+log = log.Log("rpc_server.log", echo=True)
 
 config = configparser.ConfigParser()
-config_path = "~/.config/music-rpc/server.ini"
+config_path = path.expanduser("~/.config/music-rpc/server.ini")
+config.read(config_path)
 
 if not path.exists(config_path):
-	shutil.copyfile("./server.ini", config_path)
+	shutil.copy("server.ini", config_path)
 
-
-def update_presence(status: str):
+def update_presence(status: str, RPC):
 	"""Updates Discord presence."""
-	global RPC
-	global conf
+	global config
 
 	status = loads(status)
 
 	if not status:
-		print("No music playing")
+		log.info("No music playing", echo=True)
 		return
 
-	print(status)
+	log.debug(f"{status=}")
 	match status["type"]:
 		case "cmus":
 			
 			details = f"{status.get('title')}"
 			state = f"{status.get('artist')}"
 
-			if (details.strip() and state.strip()) or conf["DEFAULT"]["use_filename_if_empty"]:
+			if (details.strip() and state.strip()) or config["cmus"]["use_filename_if_empty"]:
 				details_fmt = path.split(status["file"])[1]
 				state_fmt = ""
 			else:
@@ -44,13 +46,13 @@ def update_presence(status: str):
 			now = datetime.now()
 			start_time = None
 
-			if conf["DEFAULT"]["send_song_start"]:
-				start_time = int(now - timedelta(seconds=status["position"]).timestamp())
-			if conf["DEFAULT"]["echo_playing"]:
-				print("{} - {}".format(state_fmt, details_fmt))
+			if config["cmus"]["send_song_start"]:
+				start_time = int((now - timedelta(seconds=status["position"])).timestamp())
+			if config["DEFAULT"]["echo_playing"]:
+				log.info("{} - {}".format(state_fmt, details_fmt), echo=True)
 
 			if status.get("status") == "paused":
-				if conf["DEFAULT"]["clear_when_pause"]:
+				if config["cmus"]["clear_when_pause"]:
 					RPC.clear()
 				else:
 					RPC.update(
@@ -61,7 +63,7 @@ def update_presence(status: str):
 						small_image="github",
 						small_text="Parsa-GP/music-rpc",
 					)
-				print("Music stopped.")
+				log.info("Music stopped.", echo=True)
 			else: 
 				RPC.update(
 					details=f"{details_fmt:2}",
@@ -77,7 +79,7 @@ def update_presence(status: str):
 			artists = f"{status.get('artists', 'Unknown Artist')}"
 			start = status["start"]
 
-			print("{} - {}".format(artists, title) if artists else title)
+			log.info("{} - {}".format(artists, title) if artists else title, echo=True)
 
 			RPC.update(
 				details=f"{title:2}",
@@ -89,40 +91,42 @@ def update_presence(status: str):
 				start=start,
 			)
 		case _:
-			print("tf is this shi")
+			log.info("tf is this shi\n bro doin "+status["type"], echo=True)
 
 def main():
 	
-	conf = config.read(config_path)
-	RPC = None
+	config.read(config_path)
 
 	try:
-		print("Initializing Discord RPC... ", end="")
+		log.info("Initializing Discord RPC...")
 		try:
-			RPC = Presence(conf["DEFAULT"]["client_id"])
+			RPC = Presence(config["DEFAULT"]["client_id"])
 			RPC.connect()
 		except pyp_exceptions.InvalidID:
-			print("Client ID is Invalid.\nMake sure you copied it right or there's no junk in `client_id.txt`.")
+			log.error("Client ID is Invalid.")
 			exit()
-		print("OK")
+		log.info("Initialized Discord RPC")
 
-		server = Server(port=conf["DEFAULT"]["port"])
+		server = Server(port=int(config["DEFAULT"]["port"]))
 		while True:
 			try:
-				server.start(update_presence)
-			except pyp_exceptions.PipeClosed as e:
-				print(format_exc())
-				print("Waiting 10s to reconnect")
+				server.start(update_presence, RPC)
+			except pyp_exceptions.PipeClosed:
+				log.error(format_exc())
+				log.info("Waiting 10s to reconnect", echo=True)
 				sleep(10)
+			except ConnectionResetError:
+				log.error("Connection reset.\nmake sure discord is opened or the app is not blocked by the firewall.")
+				exit()
 
 	except KeyboardInterrupt:
-		print("Exiting.")
-	finally:
+		log.info("Exiting with ^C")
 		if RPC:
 			try:
 				RPC.clear()
 				RPC.close()
-			except ConnectionResetError:
-				print("Connection reset.\nmake sure discord is opened or the app is not blocked by the firewall.")
 			except pyp_exceptions.PipeClosed:
-				print("The pipe was closed.\nmake sure discord is opened or the app is not blocked by the firewall.")
+				log.error("The pipe was closed.\nmake sure discord is opened or the app is not blocked by the firewall.")
+				exit()
+if __name__ == "__main__":
+	main()
