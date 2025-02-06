@@ -1,3 +1,5 @@
-__pycache__
+.gitignore
 .env
+__pycache__
+db.py
 rpc_server.log

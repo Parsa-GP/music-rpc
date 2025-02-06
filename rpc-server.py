@@ -36,7 +36,7 @@ def update_presence(status: str, RPC):
 			details = f"{status.get('title')}"
 			state = f"{status.get('artist')}"
 
-			if (details.strip() and state.strip()) or config["cmus"]["use_filename_if_empty"]:
+			if (details.strip() and state.strip()) or config.getboolean("cmus", "use_filename_if_empty"):
 				details_fmt = path.split(status["file"])[1]
 				state_fmt = ""
 			else:
@@ -46,15 +46,18 @@ def update_presence(status: str, RPC):
 			now = datetime.now()
 			start_time = None
 
-			if config["cmus"]["send_song_start"]:
+			if config.getboolean("cmus", "send_song_start"):
 				start_time = int((now - timedelta(seconds=status["position"])).timestamp())
-			if config["DEFAULT"]["echo_playing"]:
-				log.info("{} - {}".format(state_fmt, details_fmt), echo=True)
+			if config.getboolean("DEFAULT", "echo_playing"):
+				print("{} - {}".format(state_fmt, details_fmt))
 
 			if status.get("status") == "paused":
-				if config["cmus"]["clear_when_pause"]:
+				log.debug("paused")
+				if config.getboolean("cmus", "clear_when_pause"):
+					log.debug("clear_when_pause=True")
 					RPC.clear()
 				else:
+					log.debug("clear_when_pause=False")
 					RPC.update(
 						details=f"{details_fmt:2}",
 						state=f"{state_fmt:2}",
@@ -100,14 +103,14 @@ def main():
 	try:
 		log.info("Initializing Discord RPC...")
 		try:
-			RPC = Presence(config["DEFAULT"]["client_id"])
+			RPC = Presence(config.getint("DEFAULT", "client_id"))
 			RPC.connect()
 		except pyp_exceptions.InvalidID:
 			log.error("Client ID is Invalid.")
 			exit()
 		log.info("Initialized Discord RPC")
 
-		server = Server(port=int(config["DEFAULT"]["port"]))
+		server = Server(port=config.getint("DEFAULT", "port"))
 		while True:
 			try:
 				server.start(update_presence, RPC)
